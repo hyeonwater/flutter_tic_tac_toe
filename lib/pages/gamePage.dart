@@ -2,11 +2,14 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hyeonsookim_tic_tac_toe/common.dart';
 
 class GamePage extends StatefulWidget {
-  const GamePage({Key? key}) : super(key: key);
+
+  const GamePage({required this.currentPlayer,Key? key}) : super(key: key);
+  final currentPlayer;
 
   @override
   State<GamePage> createState() => _GamePageState();
@@ -16,25 +19,25 @@ class _GamePageState extends State<GamePage> {
 
   Random random = Random();
   late List<String> emptyCard;
-  late String currentPlayer = randomPlayer();
   bool changeTurn = true;
-  int drawNum = 0;
+  bool drawBool = true;
+  int drawNum = 0; // 비기는 경우 카운트
+  int notationNum = 0;
+  List notation = ["", "", "", "", "", "", "", "", ""];
 
   @override
   void initState() {
+    print(widget.currentPlayer);
     initializeGame();
     super.initState();
   }
 
-  String randomPlayer() {
-    final players = ['playerOne','playerTwo'];
-    final _randomplyer = (players.toList()..shuffle())[0];
-    print(_randomplyer);
-    return _randomplyer;
-  }
   void initializeGame() {
     emptyCard = ["", "", "", "", "", "", "", "", ""];
     drawNum = 0;
+    notation = ["", "", "", "", "", "", "", "", ""];
+    notationNum = 0;
+    changeTurn = true;
   }
   @override
   Widget build(BuildContext context) {
@@ -42,8 +45,8 @@ class _GamePageState extends State<GamePage> {
       body: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: mediaHeight(context, 0.02)),
-            height: mediaHeight(context, 0.8),
+            padding: EdgeInsets.symmetric(horizontal: mediaHeight(context, 0.02),vertical: mediaHeight(context, 0.05)),
+            height: mediaHeight(context, 0.6),
             child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisSpacing: 10,
@@ -60,7 +63,6 @@ class _GamePageState extends State<GamePage> {
             onPressed: () {
               setState(() {
                 initializeGame();
-                drawNum = 0;
               });
             },
           )
@@ -72,25 +74,39 @@ class _GamePageState extends State<GamePage> {
   Widget _card(int index){
     return GestureDetector(
       onTap: (){
+        print(widget.currentPlayer);
         if(emptyCard[index].isEmpty){
           setState(() {
             if(changeTurn){
-                emptyCard[index] = currentPlayer == 'playerOne' ? 'O' : 'X';
+                emptyCard[index] = widget.currentPlayer == 'playerOne' ? 'O' : 'X';
                 drawNum += 1;
+                notationNum += 1;
+                notation[index] = notationNum;
             }else{
-              emptyCard[index] = currentPlayer == 'playerOne' ? 'X' : 'O';
+              emptyCard[index] = widget.currentPlayer == 'playerOne' ? 'X' : 'O';
               drawNum += 1;
+              notationNum += 1;
+              notation[index] = notationNum;
             }
           });
-          print(drawNum);
           changeTurn = !changeTurn;
           _checkWin();
+          if(drawNum == 9 && !drawBool){  /// drawNum이 9개이고 _checkWin에서 승리조건이 아무것도 없을때 실행
+            _drawDialog();
+          }
         }
       },
       child: Container(
         color: emptyCard[index] == 'O' ? Colors.green :Colors.grey,
         child: Center(
-            child: Text(emptyCard[index])),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(emptyCard[index]),
+                if(notation[index] != "")
+                Text('${notation[index]}')
+              ],
+            )),
       ),
     );
   }
@@ -129,17 +145,16 @@ class _GamePageState extends State<GamePage> {
     /// 2번 데이터가 비어있지 않고 2번 데이터가 4번이랑 똑같고 6번이랑 똑같은 경우
     if(emptyCard[2].isNotEmpty && emptyCard[2] == emptyCard[4] && emptyCard[2] == emptyCard[6]){
       _winDialog(emptyCard[2]);
-    }
-    else if(drawNum == 9){
-      _drawDialog();
+    }else if(drawNum == 9){
+      drawNum;
     }
   }
 
   void _drawDialog(){
     showDialog(barrierDismissible: false,
         context: context, builder: (context){
-      return CupertinoAlertDialog(
-        title: Text('비김'),
+      return AlertDialog(
+        title: Text('비겼습니다'),
         content: CupertinoButton(
           child: Text('확인'),
           onPressed: () {
@@ -157,17 +172,32 @@ class _GamePageState extends State<GamePage> {
     showDialog(
         barrierDismissible: false,
         context: context, builder: (context){
-      return CupertinoAlertDialog(
+      return AlertDialog(
         title: Text('${winner != 'X' ? '플레이어 1' : '플레이어 2' }이(가) 이겼습니다.'),
-        content: CupertinoButton(
-          child: Text('확인'),
-          onPressed: () {
-            Get.back();
-            setState(() {
-              initializeGame();
-              }
-            );
-          },
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Expanded(
+              child: CupertinoButton(
+                child: Text('앱 종료하기'),
+                onPressed: () {
+                 SystemNavigator.pop();
+                },
+              ),
+            ),
+            Expanded(
+              child: CupertinoButton(
+                child: Text('한번 더 하기'),
+                onPressed: () {
+                  Get.back();
+                  setState(() {
+                    initializeGame();
+                    }
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       );
     });
