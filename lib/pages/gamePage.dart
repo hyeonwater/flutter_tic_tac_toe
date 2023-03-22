@@ -22,8 +22,8 @@ class _GamePageState extends State<GamePage> {
   bool changeTurn = true;
   bool drawBool = true;
   int drawNum = 0; // 비기는 경우 카운트
-  int notationNum = 0;
-  List notation = ["", "", "", "", "", "", "", "", ""];
+  int notationNum = 0; // 기보 카운트
+  List notation = ["", "", "", "", "", "", "", "", ""]; // 기보 초기 세팅
 
   @override
   void initState() {
@@ -58,13 +58,28 @@ class _GamePageState extends State<GamePage> {
                   return _card(index);
                 }),
           ),
-          CupertinoButton(
-            child: Text('다시 시작하기'),
-            onPressed: () {
-              setState(() {
-                initializeGame();
-              });
-            },
+          Row(
+            children: [
+              CupertinoButton(
+                child: Text('다시 시작하기'),
+                onPressed: () {
+                  setState(() {
+                    initializeGame();
+                  });
+                },
+              ),
+              CupertinoButton(
+                child: Text('무르기'),
+                onPressed: () {
+                  setState(() {
+                    changeTurn = !changeTurn;
+                    if(notationNum > 1){
+                    notationNum --;
+                    }
+                  });
+                },
+              ),
+            ],
           )
         ],
       ),
@@ -102,8 +117,7 @@ class _GamePageState extends State<GamePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text(emptyCard[index]),
-                if(notation[index] != "")
+                Text(emptyCard[index],style: CustomTextStyle.w600(context,scale: 0.08),),
                 Text('${notation[index]}')
               ],
             )),
@@ -146,7 +160,9 @@ class _GamePageState extends State<GamePage> {
     if(emptyCard[2].isNotEmpty && emptyCard[2] == emptyCard[4] && emptyCard[2] == emptyCard[6]){
       _winDialog(emptyCard[2]);
     }else if(drawNum == 9){
-      drawNum;
+      setState(() {
+        drawBool = !drawBool;
+      });
     }
   }
 
@@ -154,8 +170,11 @@ class _GamePageState extends State<GamePage> {
     showDialog(barrierDismissible: false,
         context: context, builder: (context){
       return AlertDialog(
-        title: Text('비겼습니다'),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(15))),
+        title: Text('비겼습니다',textAlign:TextAlign.center,style: CustomTextStyle.w300(context,scale:0.02)),
         content: CupertinoButton(
+          padding: EdgeInsets.zero,
           child: Text('확인'),
           onPressed: () {
             Get.back();
@@ -173,13 +192,15 @@ class _GamePageState extends State<GamePage> {
         barrierDismissible: false,
         context: context, builder: (context){
       return AlertDialog(
-        title: Text('${winner != 'X' ? '플레이어 1' : '플레이어 2' }이(가) 이겼습니다.'),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(15))),
+        title: Text('${winner != 'X' ? '플레이어 1' : '플레이어 2' }이(가) 이겼습니다.',textAlign:TextAlign.center,style: CustomTextStyle.w300(context,scale:0.02)),
         content: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Expanded(
               child: CupertinoButton(
-                child: Text('앱 종료하기'),
+                child: Text('앱 종료하기',style: CustomTextStyle.w300(context)),
                 onPressed: () {
                  SystemNavigator.pop();
                 },
@@ -187,7 +208,7 @@ class _GamePageState extends State<GamePage> {
             ),
             Expanded(
               child: CupertinoButton(
-                child: Text('한번 더 하기'),
+                child: Text('한번 더 하기',style: CustomTextStyle.w300(context)),
                 onPressed: () {
                   Get.back();
                   setState(() {
