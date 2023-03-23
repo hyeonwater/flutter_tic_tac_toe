@@ -19,7 +19,9 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Container(
+      margin: EdgeInsets.only(left: mediaHeight(context, 0.01)),
+      width: mediaHeight(context, 1),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -28,7 +30,7 @@ class HomePage extends StatelessWidget {
             child: Column(
               children: [
                 Container(
-                  margin: EdgeInsets.only(bottom: mediaHeight(context, 0.03)),
+                  margin: EdgeInsets.only(bottom: mediaHeight(context, 0.05)),
                   child: DefaultTextStyle(
                     style: CustomTextStyle.w500(context,scale: 0.025),
                     child: AnimatedTextKit(animatedTexts: [
@@ -43,7 +45,7 @@ class HomePage extends StatelessWidget {
           ),
           CupertinoButton(
               padding: EdgeInsets.zero,
-              child: Text('게임 하러가기',style: CustomTextStyle.w400(context)),
+              child: Text('게임 하러가기',style: CustomTextStyle.w400(context,scale: 0.02)),
               onPressed: (){
                 showDialog(context: context, builder: (context){
                   return AlertDialog(

@@ -115,8 +115,6 @@ class _GamePageState extends State<GamePage> {
           });
           changeTurn = !changeTurn;
           _checkWin();
-          print(emptyCard);
-
         }
       },
       child: Container(
@@ -125,12 +123,12 @@ class _GamePageState extends State<GamePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text(emptyCard[index],style: CustomTextStyle.w600(context,scale: 0.03),),
+                Text(emptyCard[index],style: CustomTextStyle.w600(context,scale: 0.05),),
                 Text('${notation[index]}'),
                 if(notation[index] == notationNum)/// 기보가 카드에 있는 Index랑 기보 카윤트가 똑같을때만 실행
                 CupertinoButton(
                   padding: EdgeInsets.zero,
-                  child: Text(notation[index] == notationNum ? '무르기' : '',style: CustomTextStyle.w500(context,color: Colors.white),),
+                  child: Text(notation[index] == notationNum ? '무르기' : '',style: CustomTextStyle.w500(context,color: Colors.white,scale: 0.013),),
                   onPressed: () {
                       setState(() {
                         changeTurn = !changeTurn;
@@ -138,8 +136,8 @@ class _GamePageState extends State<GamePage> {
                           notationNum --;
                           drawNum --;
                         }
-                        emptyCard[index];
                         emptyCard[index] = '';
+                        emptyCard[index];
                         notation[index] = '';
                         notation[index];
                       });
