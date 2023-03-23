@@ -20,10 +20,13 @@ class _GamePageState extends State<GamePage> {
   Random random = Random();
   late List<String> emptyCard;
   bool changeTurn = true;
-  bool drawBool = true;
+  bool drawBool = false;
   int drawNum = 0; // 비기는 경우 카운트
   int notationNum = 0; // 기보 카운트
   List notation = ["", "", "", "", "", "", "", "", ""]; // 기보 초기 세팅
+
+  double horizontalPadding = 0.02;
+  double verticalPadding = 0.05;
 
   @override
   void initState() {
@@ -42,44 +45,51 @@ class _GamePageState extends State<GamePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: CupertinoButton(
+          padding: EdgeInsets.zero,
+          child: Icon(Icons.arrow_back_ios,color: Color(0xff464a59),size: mediaHeight(context, 0.03)),
+          onPressed: () {
+            Get.close(2);
+          },
+        ),
+      ),
       body: Column(
         children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: mediaHeight(context, 0.02),vertical: mediaHeight(context, 0.05)),
-            height: mediaHeight(context, 0.6),
-            child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    crossAxisCount: 3
-                ),
-                itemCount: 9,
-                itemBuilder: (context,index){
-                  return _card(index);
-                }),
+          Expanded(
+            flex: 5,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: mediaHeight(context, horizontalPadding),vertical: mediaHeight(context, verticalPadding)),
+              child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      crossAxisCount: 3
+                  ),
+                  itemCount: 9,
+                  itemBuilder: (context,index){
+                    return _card(index);
+                  }),
+            ),
           ),
-          Row(
-            children: [
-              CupertinoButton(
-                child: Text('다시 시작하기'),
-                onPressed: () {
-                  setState(() {
-                    initializeGame();
-                  });
-                },
-              ),
-              CupertinoButton(
-                child: Text('무르기'),
-                onPressed: () {
-                  setState(() {
-                    changeTurn = !changeTurn;
-                    if(notationNum > 1){
-                    notationNum --;
-                    }
-                  });
-                },
-              ),
-            ],
+          Expanded(
+            flex: 3,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CupertinoButton(
+                  child: Text('다시 시작하기'),
+                  onPressed: () {
+                    setState(() {
+                      initializeGame();
+                    });
+                  },
+                ),
+
+              ],
+            ),
           )
         ],
       ),
@@ -89,7 +99,6 @@ class _GamePageState extends State<GamePage> {
   Widget _card(int index){
     return GestureDetector(
       onTap: (){
-        print(widget.currentPlayer);
         if(emptyCard[index].isEmpty){
           setState(() {
             if(changeTurn){
@@ -106,9 +115,8 @@ class _GamePageState extends State<GamePage> {
           });
           changeTurn = !changeTurn;
           _checkWin();
-          if(drawNum == 9 && !drawBool){  /// drawNum이 9개이고 _checkWin에서 승리조건이 아무것도 없을때 실행
-            _drawDialog();
-          }
+          print(emptyCard);
+
         }
       },
       child: Container(
@@ -117,8 +125,27 @@ class _GamePageState extends State<GamePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text(emptyCard[index],style: CustomTextStyle.w600(context,scale: 0.08),),
-                Text('${notation[index]}')
+                Text(emptyCard[index],style: CustomTextStyle.w600(context,scale: 0.03),),
+                Text('${notation[index]}'),
+                if(notation[index] == notationNum)/// 기보가 카드에 있는 Index랑 기보 카윤트가 똑같을때만 실행
+                CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  child: Text(notation[index] == notationNum ? '무르기' : '',style: CustomTextStyle.w500(context,color: Colors.white),),
+                  onPressed: () {
+                      setState(() {
+                        changeTurn = !changeTurn;
+                        if(notationNum > 0){
+                          notationNum --;
+                          drawNum --;
+                        }
+                        emptyCard[index];
+                        emptyCard[index] = '';
+                        notation[index] = '';
+                        notation[index];
+                      });
+
+                  },
+                ),
               ],
             )),
       ),
@@ -137,31 +164,35 @@ class _GamePageState extends State<GamePage> {
       _winDialog(emptyCard[0]);
     }
     /// 3번 데이터가 비어있지 않고 3번 데이터가 4번이랑 똑같고 5번이랑 똑같은 경우
-    if(emptyCard[3].isNotEmpty && emptyCard[3] == emptyCard[4] && emptyCard[3] == emptyCard[5]){
+    else if(emptyCard[3].isNotEmpty && emptyCard[3] == emptyCard[4] && emptyCard[3] == emptyCard[5]){
       _winDialog(emptyCard[3]);
     }
     /// 6번 데이터가 비어있지 않고 6번 데이터가 7번이랑 똑같고 8번이랑 똑같은 경우
-    if(emptyCard[6].isNotEmpty && emptyCard[6] == emptyCard[7] && emptyCard[6] == emptyCard[8]){
+    else if(emptyCard[6].isNotEmpty && emptyCard[6] == emptyCard[7] && emptyCard[6] == emptyCard[8]){
       _winDialog(emptyCard[6]);
     }
     /// 1번 데이터가 비어있지 않고 1번 데이터가 4번이랑 똑같고 7번이랑 똑같은 경우
-    if(emptyCard[1].isNotEmpty && emptyCard[1] == emptyCard[4] && emptyCard[1] == emptyCard[7]){
+    else if(emptyCard[1].isNotEmpty && emptyCard[1] == emptyCard[4] && emptyCard[1] == emptyCard[7]){
       _winDialog(emptyCard[1]);
     }
     /// 2번 데이터가 비어있지 않고 2번 데이터가 5번이랑 똑같고 8번이랑 똑같은 경우
-    if(emptyCard[2].isNotEmpty && emptyCard[2] == emptyCard[5] && emptyCard[2] == emptyCard[8]){
+    else if(emptyCard[2].isNotEmpty && emptyCard[2] == emptyCard[5] && emptyCard[2] == emptyCard[8]){
       _winDialog(emptyCard[2]);
     }
     /// 0번 데이터가 비어있지 않고 0번 데이터가 4번이랑 똑같고 8번이랑 똑같은 경우
-    if(emptyCard[0].isNotEmpty && emptyCard[0] == emptyCard[4] && emptyCard[0] == emptyCard[8]){
+    else if(emptyCard[0].isNotEmpty && emptyCard[0] == emptyCard[4] && emptyCard[0] == emptyCard[8]){
       _winDialog(emptyCard[0]);
     }
     /// 2번 데이터가 비어있지 않고 2번 데이터가 4번이랑 똑같고 6번이랑 똑같은 경우
-    if(emptyCard[2].isNotEmpty && emptyCard[2] == emptyCard[4] && emptyCard[2] == emptyCard[6]){
+    else if(emptyCard[2].isNotEmpty && emptyCard[2] == emptyCard[4] && emptyCard[2] == emptyCard[6]){
       _winDialog(emptyCard[2]);
-    }else if(drawNum == 9){
+    }
+    else if(drawNum == 9){
       setState(() {
-        drawBool = !drawBool;
+        drawBool = true;
+        if(drawNum == 9 && drawBool == true){  /// drawNum이 9개이고 _checkWin에서 승리조건이 아무것도 없을때 실행
+          _drawDialog();
+        }
       });
     }
   }

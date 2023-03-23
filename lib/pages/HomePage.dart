@@ -59,9 +59,10 @@ class HomePage extends StatelessWidget {
                             child: Text('먼저하는 플레이어는 : ${currentPlayer == 'playerOne' ?'플레이어 1':'플레이어2'}입니다.',style: CustomTextStyle.w300(context),)),
                         CupertinoButton(
                           padding: EdgeInsets.zero,
-                            child: Text('시작하기'), onPressed: (){
-                          print(currentPlayer);
-                          Get.offAll(() => GamePage(currentPlayer:currentPlayer));
+                            child: Text('시작하기'),
+                            onPressed: (){
+                            print(currentPlayer);
+                            Get.to(() => GamePage(currentPlayer:currentPlayer));
                         })
                       ],
                     ),
