@@ -73,17 +73,21 @@ class _GamePageState extends State<GamePage> {
             ),
           ),
           Expanded(
-            child: Slider(
-              /// 슬라이드를 하여 그리드뷰 패딩값을 조절해 게임판 조절 가능
-                value: horizontalPadding,
-                min: 0.02,
-                max: 0.07,
-                divisions: 10,
-                onChanged: (value){
-              setState(() {
-                horizontalPadding = value;
-              });
-            }),
+            child: Container(
+              width: mediaHeight(context, 0.4),
+              child: CupertinoSlider(
+                /// 슬라이드를 하여 그리드뷰 패딩값을 조절해 게임판 조절 가능
+                  value: horizontalPadding,
+                  min: 0.02,
+                  max: 0.07,
+                  onChanged: (value){
+                setState(() {
+                  horizontalPadding = value;
+                });
+              },
+                activeColor: Colors.green,
+              ),
+            ),
           ),
           Expanded(
             flex: 2,
