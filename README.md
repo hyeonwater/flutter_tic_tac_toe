@@ -1,1 +1,3 @@
-# flutter_tic_tac_toe
+# 넷째날.
+1. 셋째 날에 비겼을때 로직에 오류가 또 생겨 _checkWin안에있는 if문을 else if문으로 변경 함.
+2. 무르기 버튼 추가
