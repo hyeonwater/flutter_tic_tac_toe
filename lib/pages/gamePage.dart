@@ -21,12 +21,10 @@ class _GamePageState extends State<GamePage> {
   late List<String> emptyCard;
   bool changeTurn = true;
   bool drawBool = false;
-  int drawNum = 0; // 비기는 경우 카운트
-  int notationNum = 0; // 기보 카운트
-  List notation = ["", "", "", "", "", "", "", "", ""]; // 기보 초기 세팅
-
-  double horizontalPadding = 0.02;
-  double verticalPadding = 0.05;
+  int drawNum = 0; /// 비기는 경우 카운트
+  int notationNum = 0; /// 기보 카운트
+  List notation = ["", "", "", "", "", "", "", "", ""]; /// 기보 초기 세팅
+  double horizontalPadding = 0.02; /// 슬라이드 할 경우 수평패딩이 변경 가능하게 함
 
   @override
   void initState() {
@@ -61,7 +59,7 @@ class _GamePageState extends State<GamePage> {
           Expanded(
             flex: 5,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: mediaHeight(context, horizontalPadding),vertical: mediaHeight(context, verticalPadding)),
+              padding: EdgeInsets.symmetric(horizontal: mediaHeight(context, horizontalPadding),vertical: mediaHeight(context, 0.05)),
               child: GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisSpacing: 10,
@@ -75,7 +73,20 @@ class _GamePageState extends State<GamePage> {
             ),
           ),
           Expanded(
-            flex: 3,
+            child: Slider(
+              /// 슬라이드를 하여 그리드뷰 패딩값을 조절해 게임판 조절 가능
+                value: horizontalPadding,
+                min: 0.02,
+                max: 0.07,
+                divisions: 10,
+                onChanged: (value){
+              setState(() {
+                horizontalPadding = value;
+              });
+            }),
+          ),
+          Expanded(
+            flex: 2,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -123,26 +134,35 @@ class _GamePageState extends State<GamePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text(emptyCard[index],style: CustomTextStyle.w600(context,scale: 0.05),),
-                Text('${notation[index]}'),
+                Expanded(
+                  flex: notation[index] == notationNum ? 4 : 6,
+                    child: Center(child: Text(emptyCard[index],style: CustomTextStyle.w600(context,scale: 0.05),))),
+                Expanded(
+                  flex: notation[index] == notationNum ? 1 : 3,
+                    child: Text('${notation[index]}')),
                 if(notation[index] == notationNum)/// 기보가 카드에 있는 Index랑 기보 카윤트가 똑같을때만 실행
-                CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  child: Text(notation[index] == notationNum ? '무르기' : '',style: CustomTextStyle.w500(context,color: Colors.white,scale: 0.013),),
-                  onPressed: () {
-                      setState(() {
-                        changeTurn = !changeTurn;
-                        if(notationNum > 0){
-                          notationNum --;
-                          drawNum --;
-                        }
-                        emptyCard[index] = '';
-                        emptyCard[index];
-                        notation[index] = '';
-                        notation[index];
-                      });
+                Expanded(
+                  flex: 2,
+                  child: CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    child: Text(notation[index] == notationNum ? '무르기' : '',style: CustomTextStyle.w500(context,color: Colors.white,scale: 0.013),),
+                    onPressed: () {
+                      /// 무르기 기능
+                      ///
+                        setState(() {
+                          changeTurn = !changeTurn;
+                          if(notationNum > 0){
+                            notationNum --;
+                            drawNum --;
+                          }
+                          emptyCard[index] = '';
+                          emptyCard[index];
+                          notation[index] = '';
+                          notation[index];
+                        });
 
-                  },
+                    },
+                  ),
                 ),
               ],
             )),

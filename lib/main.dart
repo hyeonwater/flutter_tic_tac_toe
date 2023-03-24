@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hyeonsookim_tic_tac_toe/pages/HomePage.dart';
+import 'package:hyeonsookim_tic_tac_toe/pages/homePage.dart';
 import 'package:hyeonsookim_tic_tac_toe/pages/gamePage.dart';
 
 void main() {
