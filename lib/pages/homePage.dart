@@ -17,61 +17,64 @@ class HomePage extends StatelessWidget {
   }
   late String currentPlayer = randomPlayer();
 
+  bool derkMode = false;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(left: mediaHeight(context, 0.01)),
-      width: mediaHeight(context, 1),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            margin: EdgeInsets.only(bottom: mediaHeight(context, 0.2)),
-            child: Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.only(bottom: mediaHeight(context, 0.05)),
-                  child: DefaultTextStyle(
-                    style: CustomTextStyle.w500(context,scale: 0.025),
-                    child: AnimatedTextKit(animatedTexts: [
-                      WavyAnimatedText('Tic-Tac-Toe')
-                    ],
-                    repeatForever: true,),
-                  ),
-                ),
-                Lottie.asset('assets/tic-tac-toe.json',height: mediaHeight(context, 0.3)),
-              ],
-            ),
-          ),
-          CupertinoButton(
-              padding: EdgeInsets.zero,
-              child: Text('게임 하러가기',style: CustomTextStyle.w400(context,scale: 0.02)),
-              onPressed: (){
-                showDialog(context: context, builder: (context){
-                  return AlertDialog(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15))),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text('플레이어는 랜덤으로 시작됩니다',style: CustomTextStyle.w300(context),),
-                        Container(
-                          margin: EdgeInsets.only(top: mediaHeight(context, 0.01),bottom: mediaHeight(context, 0.025)),
-                            child: Text('먼저하는 플레이어는 : ${currentPlayer == 'playerOne' ?'플레이어 1':'플레이어2'}입니다.',style: CustomTextStyle.w300(context),)),
-                        CupertinoButton(
-                          padding: EdgeInsets.zero,
-                            child: Text('시작하기'),
-                            onPressed: (){
-                            print(currentPlayer);
-                            Get.to(() => GamePage(currentPlayer:currentPlayer));
-                        })
+    return Scaffold(
+      body: Container(
+        margin: EdgeInsets.only(left: mediaHeight(context, 0.01)),
+        width: mediaHeight(context, 1),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              margin: EdgeInsets.only(bottom: mediaHeight(context, 0.2)),
+              child: Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(bottom: mediaHeight(context, 0.05)),
+                    child: DefaultTextStyle(
+                      style: CustomTextStyle.w500(context,scale: 0.025),
+                      child: AnimatedTextKit(animatedTexts: [
+                        WavyAnimatedText('Tic-Tac-Toe')
                       ],
+                      repeatForever: true,),
                     ),
-                  );
-                });
-              })
-        ],
+                  ),
+                  Lottie.asset('assets/tic-tac-toe.json',height: mediaHeight(context, 0.3)),
+                ],
+              ),
+            ),
+            CupertinoButton(
+                padding: EdgeInsets.zero,
+                child: Text('게임 하러가기',style: CustomTextStyle.w400(context,scale: 0.02)),
+                onPressed: (){
+                  showDialog(context: context, builder: (context){
+                    return AlertDialog(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(15))),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text('플레이어는 랜덤으로 시작됩니다',style: CustomTextStyle.w300(context),),
+                          Container(
+                            margin: EdgeInsets.only(top: mediaHeight(context, 0.01),bottom: mediaHeight(context, 0.025)),
+                              child: Text('먼저하는 플레이어는 : ${currentPlayer == 'playerOne' ?'플레이어 1':'플레이어2'}입니다.',style: CustomTextStyle.w300(context),)),
+                          CupertinoButton(
+                            padding: EdgeInsets.zero,
+                              child: Text('시작하기'),
+                              onPressed: (){
+                              print(currentPlayer);
+                              Get.to(() => GamePage(currentPlayer:currentPlayer));
+                          })
+                        ],
+                      ),
+                    );
+                  });
+                })
+          ],
+        ),
       ),
     );
   }
