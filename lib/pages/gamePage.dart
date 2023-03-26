@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
@@ -25,6 +26,7 @@ class _GamePageState extends State<GamePage> {
   int notationNum = 0; /// 기보 카운트
   List notation = ["", "", "", "", "", "", "", "", ""]; /// 기보 초기 세팅
   double horizontalPadding = 0.02; /// 슬라이드 할 경우 수평패딩이 변경 가능하게 함
+  bool darkMode = false;
 
   @override
   void initState() {
@@ -51,8 +53,33 @@ class _GamePageState extends State<GamePage> {
           child: Icon(Icons.arrow_back_ios,color: Color(0xff464a59),size: mediaHeight(context, 0.03)),
           onPressed: () {
             Get.close(2);
+            Get.changeTheme(ThemeData.light()); /// HomePage gif파일 배경이 흰색이므로 라이트모드로 강제 변환
           },
         ),
+        actions: [
+          Container(
+            margin: EdgeInsets.only(right: mediaHeight(context, 0.02)),
+            child: Row(
+              children: [
+                Container(
+                  margin:EdgeInsets.only(right: mediaHeight(context, 0.01)),
+                  child: CupertinoSwitch(
+                    activeColor: Colors.grey,
+                    value: darkMode,
+                    onChanged: (value){
+                      darkMode = value;
+                      setState(() {
+                        darkMode != false;
+                        Get.changeTheme(Get.isDarkMode? ThemeData.light(): ThemeData.dark());
+                      });
+                    },
+                  ),
+                ),
+                Text(darkMode ? 'Dark mode' : 'Light mode',style: CustomTextStyle.w300(context,color: darkMode ? Colors.white : Colors.black),),
+              ],
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -95,7 +122,7 @@ class _GamePageState extends State<GamePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CupertinoButton(
-                  child: Text('다시 시작하기'),
+                  child: Text('다시 시작하기',style: CustomTextStyle.w300(context,color: darkMode ? Colors.white : Colors.black),),
                   onPressed: () {
                     setState(() {
                       initializeGame();
@@ -152,7 +179,6 @@ class _GamePageState extends State<GamePage> {
                     child: Text(notation[index] == notationNum ? '무르기' : '',style: CustomTextStyle.w500(context,color: Colors.white,scale: 0.013),),
                     onPressed: () {
                       /// 무르기 기능
-                      ///
                         setState(() {
                           changeTurn = !changeTurn;
                           if(notationNum > 0){
@@ -225,10 +251,10 @@ class _GamePageState extends State<GamePage> {
       return AlertDialog(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(15))),
-        title: Text('비겼습니다',textAlign:TextAlign.center,style: CustomTextStyle.w300(context,scale:0.02)),
+        title: Text('비겼습니다',textAlign:TextAlign.center,style: CustomTextStyle.w300(context,scale:0.02,color: darkMode ? Colors.white : Colors.black)),
         content: CupertinoButton(
           padding: EdgeInsets.zero,
-          child: Text('확인'),
+          child: Text('확인',style: CustomTextStyle.w300(context,color: darkMode ? Colors.white : Colors.black),),
           onPressed: () {
             Get.back();
             setState(() {
@@ -247,21 +273,25 @@ class _GamePageState extends State<GamePage> {
       return AlertDialog(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(15))),
-        title: Text('${winner != 'X' ? '플레이어 1' : '플레이어 2' }이(가) 이겼습니다.',textAlign:TextAlign.center,style: CustomTextStyle.w300(context,scale:0.02)),
+        title: Text('${winner != 'X' ? '플레이어 1' : '플레이어 2' }이(가) 이겼습니다.',textAlign:TextAlign.center,style: CustomTextStyle.w300(context,scale:0.02,color: darkMode ? Colors.white : Colors.black)),
         content: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Expanded(
               child: CupertinoButton(
-                child: Text('앱 종료하기',style: CustomTextStyle.w300(context)),
+                child: Text('앱 종료하기',style: CustomTextStyle.w300(context,color: darkMode ? Colors.white : Colors.black)),
                 onPressed: () {
-                 SystemNavigator.pop();
+                  if(Platform.isIOS){
+                    exit(0);
+                  }else{
+                    SystemNavigator.pop(); /// SystemNavigator.pop() 이 코드는 안드로이드 한정 코드
+                  }
                 },
               ),
             ),
             Expanded(
               child: CupertinoButton(
-                child: Text('한번 더 하기',style: CustomTextStyle.w300(context)),
+                child: Text('한번 더 하기',style: CustomTextStyle.w300(context,color: darkMode ? Colors.white : Colors.black)),
                 onPressed: () {
                   Get.back();
                   setState(() {
